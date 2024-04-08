@@ -21,12 +21,20 @@ func main() {
 
 }
 
+type person struct {
+	ID string `json:"id"`
+}
 func saveUser(c echo.Context) error {
 	return c.String(http.StatusOK, "save User")
 }
 
+// e.GET("/users/:id", getUser)
 func getUser(c echo.Context) error {
-	return c.String(http.StatusOK, "get User")
+	id := c.Param("id")
+	p := person{
+		ID: id,
+	}
+	return c.JSON(http.StatusOK,p)
 }
 
 func updateUser(c echo.Context) error {
