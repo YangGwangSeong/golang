@@ -14,6 +14,7 @@ func main() {
 
 	// users
 	e.POST("/users", saveUser)
+	e.POST("/save", save)
 	e.GET("/users/:id", getUser)
 	e.GET("/show", show)
 	e.PATCH("/users/:id", updateUser)
@@ -25,6 +26,14 @@ func main() {
 type person struct {
 	ID string `json:"id"`
 }
+
+// Form application/x-www-form-urlencoded
+func save(c echo.Context) error {
+	name := c.FormValue("name")
+	email := c.FormValue("email")
+	return c.String(http.StatusOK, "name:" + name + ", email: " + email)
+}
+
 func saveUser(c echo.Context) error {
 	return c.String(http.StatusOK, "save User")
 }
