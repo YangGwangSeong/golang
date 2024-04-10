@@ -15,6 +15,7 @@ func main() {
 	// users
 	e.POST("/users", saveUser)
 	e.GET("/users/:id", getUser)
+	e.GET("/show", show)
 	e.PATCH("/users/:id", updateUser)
 	e.DELETE("/users/:id", deleteUser)
 	e.Logger.Fatal(e.Start(":1323"))
@@ -26,6 +27,13 @@ type person struct {
 }
 func saveUser(c echo.Context) error {
 	return c.String(http.StatusOK, "save User")
+}
+
+// Query Parameters
+func show(c echo.Context) error {
+	team := c.QueryParam("team")
+	member := c.QueryParam("member")
+	return c.String(http.StatusOK, "team:" + team + ", member:" + member);
 }
 
 // e.GET("/users/:id", getUser)
