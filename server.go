@@ -18,6 +18,15 @@ func main() {
 	e.POST("/users", saveUser)
 	e.POST("/save", save)
 	e.POST("/multi/save", multiSave)
+	// Handling Request
+	e.POST("/handle/users", func(c echo.Context) error {
+		u := new(User)
+		if err := c.Bind(u); err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusCreated,u)
+	})
 	e.GET("/users/:id", getUser)
 	e.GET("/show", show)
 	e.PATCH("/users/:id", updateUser)
@@ -26,9 +35,15 @@ func main() {
 
 }
 
+type User struct { // handle/users로 form데이터 전송과 raw json 전송은 정상적으로 받아지는데 여기서 query는 쿼리 파라미터가 아닌듯
+	Name  string `json:"name" xml:"name" form:"name" query:"name"`
+	Email string `json:"email" xml:"email" form:"email" query:"email"`
+}
+
 type person struct {
 	ID string `json:"id"`
 }
+
 func multiSave(c echo.Context) error {
 	// Get name
 	name := c.FormValue("name")
