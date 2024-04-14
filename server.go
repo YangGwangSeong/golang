@@ -31,6 +31,9 @@ func main() {
 	e.GET("/show", show)
 	e.PATCH("/users/:id", updateUser)
 	e.DELETE("/users/:id", deleteUser)
+
+	// image,  pdf , fonts ...
+	e.Static("/static","static!!");
 	e.Logger.Fatal(e.Start(":1323"))
 
 }
