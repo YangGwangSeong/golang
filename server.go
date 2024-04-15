@@ -10,6 +10,20 @@ import (
 
 func main() {
 	e := echo.New()
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cc := &CustomContext{c}
+			return next(cc)
+		}
+	})
+
+	e.GET("/handle", func(c echo.Context) error {
+		cc := c.(*CustomContext)
+		cc.Foo()
+		cc.Bar()
+		return cc.String(200, "OK")
+	})
+
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
@@ -36,6 +50,18 @@ func main() {
 	e.Static("/static","static!!");
 	e.Logger.Fatal(e.Start(":1323"))
 
+}
+
+type CustomContext struct {
+	echo.Context
+}
+
+func (c *CustomContext) Foo() {
+	println("foo")
+}
+
+func (c *CustomContext) Bar() {
+	println("bar")
 }
 
 type User struct { // handle/users로 form데이터 전송과 raw json 전송은 정상적으로 받아지는데 여기서 query는 쿼리 파라미터가 아닌듯
