@@ -10,6 +10,7 @@ import (
 
 func main() {
 	e := echo.New()
+	
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			cc := &CustomContext{c}
@@ -23,6 +24,18 @@ func main() {
 		cc.Bar()
 		return cc.String(200, "OK")
 	})
+
+	track := func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			println("request to /middleware/users")
+			return next(c)
+		}
+	}
+
+	// Route level middleware
+	e.GET("/middleware/users", func(c echo.Context) error {
+		return c.String(http.StatusOK, "/users")
+	}, track)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
@@ -52,6 +65,7 @@ func main() {
 
 }
 
+
 type CustomContext struct {
 	echo.Context
 }
@@ -72,6 +86,8 @@ type User struct { // handle/users로 form데이터 전송과 raw json 전송은
 type person struct {
 	ID string `json:"id"`
 }
+
+
 
 func multiSave(c echo.Context) error {
 	// Get name
