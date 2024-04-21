@@ -32,6 +32,14 @@ func main() {
 		}
 	}
 
+	// Struct Tag Binding
+	// bind/users?id=<userID> 이렇게 설정 했었는데 not found 에러로 발생했다.
+	// 라우터 설정을 bind/users 이렇게 해두고 bind/users?id=1234 이런식으로 요청하면 id값이 정상적으로 받을 수 있다!
+	// Struct Tag Binding이란걸 잘 활용하면 Struct에 파라미터들을 선언하고 유효성 검사를 할 수 있을것 같다.
+	// 근데 혹시 body도 가능한가? 가능한것 같다.
+	// 시도 해볼것 bind/users?id=1234/1234
+	e.GET("bind/users",getBindUser)
+
 	// Route level middleware
 	e.GET("/middleware/users", func(c echo.Context) error {
 		return c.String(http.StatusOK, "/users")
@@ -65,7 +73,6 @@ func main() {
 
 }
 
-
 type CustomContext struct {
 	echo.Context
 }
@@ -76,6 +83,11 @@ func (c *CustomContext) Foo() {
 
 func (c *CustomContext) Bar() {
 	println("bar")
+}
+
+// query 파라미터는 Struct Tag Binding으로 받는것 같다
+type BindUSer struct{
+	ID string `query:"id"`
 }
 
 type User struct { // handle/users로 form데이터 전송과 raw json 전송은 정상적으로 받아지는데 여기서 query는 쿼리 파라미터가 아닌듯
@@ -153,5 +165,14 @@ func updateUser(c echo.Context) error {
 
 func deleteUser(c echo.Context) error {
 	return c.String(http.StatusOK, "delete User")
+}
+
+func getBindUser(c echo.Context) error {
+	var user BindUSer
+	err := c.Bind(&user); if err != nil {
+		return c.String(http.StatusBadRequest, "bad request")
+	}
+
+	return c.String(http.StatusOK, user.ID)
 }
 
